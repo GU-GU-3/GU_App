@@ -1,0 +1,108 @@
+﻿<Window x:Class="CollectAdvice.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="課題管理" Height="800" Width="800">
+
+    <Window.Resources>
+        <Style x:Key="RoundedButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="LightSkyBlue"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="20"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- 色分けスタイル -->
+        <Style x:Key="CategoryStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="DarkSlateBlue"/>
+        </Style>
+
+        <Style x:Key="TaskStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="DarkGreen"/>
+        </Style>
+
+        <Style x:Key="AdviceStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="DarkOrange"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <!-- ボタンエリア -->
+            <RowDefinition Height="auto"/>
+            <!-- TreeViewエリア -->
+        </Grid.RowDefinitions>
+
+        <!-- タブコントロール -->
+        <TabControl Margin="10" Grid.Row="0">
+            <!-- 課題タブ -->
+            <TabItem Header="課題">
+                <StackPanel>
+                    <Button Style="{StaticResource RoundedButtonStyle}" Content="課題取得"
+                            Click="GetAdviceButton_OnClick" HorizontalAlignment="Center" Margin="10"/>
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="10">
+                        <TreeView Name="m_TaskTreeView" ItemsSource="{Binding Categories}">
+                            <TreeView.ItemTemplate>
+                                <HierarchicalDataTemplate ItemsSource="{Binding Tasks}">
+                                    <!-- カテゴリの表示 -->
+                                    <TextBlock Text="{Binding Name}" FontWeight="Bold" Style="{StaticResource CategoryStyle}" Margin="0,0,0,5"/>
+                                    <HierarchicalDataTemplate.ItemTemplate>
+                                        <DataTemplate>
+                                            <!-- 課題の表示 -->
+                                            <TextBlock Text="{Binding Description}" Style="{StaticResource TaskStyle}" Margin="5,0,0,5"/>
+                                        </DataTemplate>
+                                    </HierarchicalDataTemplate.ItemTemplate>
+                                </HierarchicalDataTemplate>
+                            </TreeView.ItemTemplate>
+                        </TreeView>
+                    </ScrollViewer>
+                    <!-- 最近の課題に対するアドバイスを表示するTextBlock -->
+                    <TextBlock Text="{Binding AdviceforRecentTask, TargetNullValue='アドバイスがありません。'}" Style="{StaticResource AdviceStyle}" Margin="10" TextWrapping="Wrap" FontSize="14" HorizontalAlignment="Stretch"/>
+                </StackPanel>
+            </TabItem>
+
+            <!-- 設定タブ -->
+            <TabItem Header="設定">
+                <StackPanel Margin="10">
+                    <TextBlock Text="開始日:"/>
+                    <DatePicker x:Name="StartDatePicker" 
+                                Margin="0,5"
+                                SelectedDate="{Binding StartDate, Mode=TwoWay}" />
+                    <TextBlock Text="終了日:"/>
+                    <DatePicker x:Name="EndDatePicker" 
+                                Margin="0,5"
+                                SelectedDate="{Binding EndDate, Mode=TwoWay}" />
+        
+                    <!-- APIキー入力用のテキストボックス -->
+                    <TextBlock Text="Gemini APIキー:" Margin="5"/>
+                    <TextBox x:Name="GeminiApiKeyTextBox" Margin="0,5" Width="200" Text="{Binding GeminiAPIKey, Mode=TwoWay}"/>
+        
+                    <TextBlock Text="Slack APIキー:" Margin="5"/>
+                    <TextBox x:Name="SlackApiKeyTextBox" Margin="0,5" Width="200" Text="{Binding SlackAPIKey, Mode=TwoWay}"/>
+        
+                    <TextBlock Text="Slack チャンネルID:" Margin="5"/>
+                    <TextBox x:Name="SlackChannelIdTextBox" Margin="0,5" Width="200" Text="{Binding SlackChannelID, Mode=TwoWay}"/>
+        
+                    <!-- 保存ボタン -->
+                    <Button Style="{StaticResource RoundedButtonStyle}" Content="保存"
+                            Click="SaveSettingsButton_Click" HorizontalAlignment="Center" Margin="10"/>
+                </StackPanel>
+            </TabItem>
+
+        </TabControl>
+
+    </Grid>
+</Window>
